@@ -1,0 +1,155 @@
+-- baseState.lua
+BaseState = {}
+BaseState.__index = BaseState
+
+
+require("states.baseWindow")
+
+-- Inspection --
+require("helper_functions.dump")
+
+-- Deepcopy Util --
+require("helper_functions.deepcopy")
+
+-- Camera --
+local Camera = require("libraries.STALKER-X.Camera")
+
+
+function BaseState.new()
+    local self = setmetatable({}, BaseState)
+    return self
+end
+
+function BaseState:init()
+end
+
+function BaseState:enter(persistent)
+  -- init window --
+  self.window = persistent.window
+  
+    --window sizes--
+  self.window_height = self.window.window_height
+  self.window_width = self.window.window_width
+  self.scale_factor = self.window.scale_factor
+  
+  self.target_width = self.window.target_width
+  self.target_height = self.window.target_height
+
+  -- Create a render target
+  self.canvas = love.graphics.newCanvas(self.window_width, self.window_height)
+  
+  
+  self.cam = Camera(0, 0, self.window_width, self.window_height)
+  self.cam:setFollowLerp(0.2)
+  self.cam:setFollowLead(0)
+  self.cam:setFollowStyle('PLATFORMER')
+  self.cam.scale = 1;
+
+end
+
+
+function BaseState:update(dt)
+  if self.debug_key == true and self.debug_mode == false then
+    print("Debug Mode On")
+    self.debug_mode = true
+    self.debug_key = false
+  elseif self.debug_key == true and self.debug_mode == true then
+    print("Debug Mode Off")
+    self.debug_mode = false
+    self.debug_key = false
+  end
+  
+end
+
+function BaseState:draw()
+
+end
+
+function BaseState:SoftReset()
+
+end
+
+function BaseState:HardReset()
+
+end
+
+function BaseState:keypressed(key)
+
+    if key == 'b' then
+        self.b_down = false
+    end
+
+    if key == 'a' then
+        self.a_down = false
+    end
+
+    if key == 's' then
+        self.s_down = false
+    end
+
+    if key == 'd' then
+        self.d_down = false
+    end
+
+    if key == 'w' then
+        self.w_down = false
+    end
+
+    if key == "space" then
+      self.space = false
+    end
+
+    if key == 'c' then
+        self.c_down = false
+    end
+    
+end
+
+function BaseState:keyreleased(key)
+
+  
+    if key == 'b' then
+        self.b_down = true
+    end
+
+    if key == 't' then
+        self.t_down = true
+    end
+
+    if key == 'c' then
+      self.my_player.dash = true
+    end
+
+
+    if key == 'a' then
+        self.a_down = true
+    end
+
+    if key == 's' then
+        self.s_down = true
+    end
+
+    if key == 'd' then
+      self.d_down = true
+      self.debug_key = true
+
+    end
+
+    if key == 'w' then
+        self.w_down = true
+    end    
+    if key == 'c' then
+        self.c_down = true
+    end
+
+
+    
+end
+
+function BaseState:mousepressed(mx, my, mbutton)
+    
+end
+
+function BaseState:mousereleased(mx, my, mbutton)
+    
+end
