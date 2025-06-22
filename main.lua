@@ -15,11 +15,11 @@ local Class = require("libraries.hump-master.class")
 -- main.lua
 local Gamestate = require "libraries.hump-master.gamestate"
 -- Load the necessary state files
-require("states.BaseState")  -- Base state with common methods
+require("states.BaseState")                 -- Base state with common methods
 local DevState = require("states.DevState")  -- DevState (state for development/debug mode)
 
 
-require("states.baseWindow") -- Base Window
+require("states.BaseWindow") -- Base Window
 local csv = require("libraries.lua-csv-master.lua.csv")
 
 
@@ -36,7 +36,7 @@ function love.load()
   Gamestate.registerEvents()
 
   -- Load Window --
-  local window = baseWindow()
+  local window = BaseWindow()
  -- Persistent variables --
   local persistent = {
     window = window,

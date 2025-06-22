@@ -3,7 +3,7 @@ BaseState = {}
 BaseState.__index = BaseState
 
 
-require("states.baseWindow")
+require("states.BaseWindow")
 
 -- Inspection --
 require("helper_functions.dump")
@@ -63,6 +63,24 @@ end
 
 function BaseState:draw()
 
+  love.graphics.setCanvas(self.canvas)
+  love.graphics.clear(0, 0, 0, 0)
+  -- Camera --
+  self.cam:attach()
+  love.graphics.setColor(1, 1, 1, 1)
+
+  self.map:drawLayer(self.map.layers["Tile Layer 1"])
+
+  -- This will be different for every State --
+  self:render()
+  
+  self.cam:detach()
+  love.graphics.setCanvas()
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.setBlendMode("alpha", "premultiplied")
+  
+  love.graphics.draw(self.canvas, 0, 0, 0, self.scale_factor, self.scale_factor)
+  love.graphics.setBlendMode("alpha")
 end
 
 function BaseState:SoftReset()

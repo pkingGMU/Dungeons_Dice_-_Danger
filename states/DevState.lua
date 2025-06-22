@@ -18,8 +18,9 @@ function DevState:init()
 end
 
 function DevState:enter(prev, persistent)
+  self.map = sti("assets/maps/map1.lua")
   BaseState.enter(self, persistent)
-  
+
 
 end
 
@@ -28,20 +29,8 @@ function DevState:update(dt)
 end
 
 
-function DevState:draw()
-  love.graphics.setCanvas(self.canvas)
-  love.graphics.clear(0, 0, 0, 0)
-  -- Camera --
-  self.cam:attach()
-  love.graphics.setColor(1, 1, 1, 1)
-  self.cam:detach()
-  love.graphics.setCanvas()
-  love.graphics.setColor(1, 1, 1)
-  love.graphics.setBlendMode("alpha", "premultiplied")
+function DevState:render()
   
-  love.graphics.draw(self.canvas, 0, 0, 0, self.scale_factor, self.scale_factor)
-  love.graphics.setBlendMode("alpha")
-
 end
 
 function DevState:keypressed(key)
