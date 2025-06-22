@@ -25,7 +25,7 @@ function DevState:enter(prev, persistent)
 end
 
 function DevState:update(dt)
-
+  BaseState.update(self, dt)
 end
 
 

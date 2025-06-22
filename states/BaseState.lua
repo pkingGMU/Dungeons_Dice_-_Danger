@@ -45,6 +45,11 @@ function BaseState:enter(persistent)
   self.cam:setFollowStyle('PLATFORMER')
   self.cam.scale = 1;
 
+  -- Panning --
+  self.panning = false
+  local init_pan_x = 0
+  local init_pan_y = 0
+  
 end
 
 
@@ -58,6 +63,22 @@ function BaseState:update(dt)
     self.debug_mode = false
     self.debug_key = false
   end
+
+  -- Panning Update --
+  if love.mouse.isDown(3) then
+    print("holding down")
+    if not self.panning then
+      self.panning = true
+      init_pan_x, init_pan_y = love.mouse.getPosition()
+    else
+      local current_pan_x, current_pan_y = love.mouse.getPosition()
+      self.cam.x = self.cam.x + (current_pan_x - init_pan_x) * dt*2
+      self.cam.y = self.cam.y + (current_pan_y - init_pan_y) * dt*2
+    end
+  elseif self.panning then
+    self.panning = false
+  end
+  
   
 end
 
@@ -90,6 +111,23 @@ end
 function BaseState:HardReset()
 
 end
+
+function BaseState:mousepressed(x, y, button)
+
+  if button == 3 then
+    print("Middle Mouse Button Pressed")
+  end
+end
+
+
+function BaseState:mousereleased(x, y, button)
+  if button == 3 then
+    self.panning = false
+    print("Middle Mouse Button Released")
+  end
+  
+end
+
 
 function BaseState:keypressed(key)
 
@@ -164,10 +202,3 @@ function BaseState:keyreleased(key)
     
 end
 
-function BaseState:mousepressed(mx, my, mbutton)
-    
-end
-
-function BaseState:mousereleased(mx, my, mbutton)
-    
-end
