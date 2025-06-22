@@ -39,21 +39,31 @@ function BaseState:enter(persistent)
   self.canvas = love.graphics.newCanvas(self.window_width, self.window_height)
   
   
-  self.cam = Camera(0, 0, self.window_width, self.window_height)
+  self.cam = Camera(self.window_width / 2, self.window_height / 2, self.window_width, self.window_height)
   self.cam:setFollowLerp(0.2)
   self.cam:setFollowLead(0)
   self.cam:setFollowStyle('PLATFORMER')
+  self.zoom_level = 1;
   self.cam.scale = 1;
 
   -- Panning --
   self.panning = false
   local init_pan_x = 0
   local init_pan_y = 0
+
+  -- Test Get Layer Properties --
+  self.map_width = self.map.width * self.map.tilewidth
+  self.map_height = self.map.height * self.map.tilewidth
+  
   
 end
 
 
 function BaseState:update(dt)
+
+  
+
+  
   if self.debug_key == true and self.debug_mode == false then
     print("Debug Mode On")
     self.debug_mode = true
@@ -72,13 +82,15 @@ function BaseState:update(dt)
       init_pan_x, init_pan_y = love.mouse.getPosition()
     else
       local current_pan_x, current_pan_y = love.mouse.getPosition()
-      self.cam.x = self.cam.x + (current_pan_x - init_pan_x) * dt*2
-      self.cam.y = self.cam.y + (current_pan_y - init_pan_y) * dt*2
+      self.cam.x = clamp(self.cam.x + (current_pan_x - init_pan_x) * dt*2, (self.window_width / self.cam.scale) / 2, self.map_width - (self.window_width / self.cam.scale) / 2)
+      self.cam.y = clamp(self.cam.y + (current_pan_y - init_pan_y) * dt*2, (self.window_height / self.cam.scale) /2, self.map_height - (self.window_height / self.cam.scale) / 2)
     end
   elseif self.panning then
     self.panning = false
   end
   
+
+
   
 end
 
@@ -128,6 +140,19 @@ function BaseState:mousereleased(x, y, button)
   
 end
 
+function BaseState:wheelmoved(x, y)
+  if y > 0 then
+    print("Mouse wheel up")
+    self.zoom_level = self.cam.scale +.05
+    self.cam.scale = self.zoom_level
+  elseif y < 0 then
+    print("Mouse wheel down")
+    self.zoom_level = self.cam.scale - .05
+    self.cam.scale = self.zoom_level
+  end
+  
+  
+end
 
 function BaseState:keypressed(key)
 
@@ -202,3 +227,6 @@ function BaseState:keyreleased(key)
     
 end
 
+function clamp(val, min, max)
+  return math.max(min, math.min(max, val))
+end
