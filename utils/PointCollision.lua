@@ -1,8 +1,9 @@
-local function pointInObject(x, y, obj)
-    return x >= obj.x
-       and x <= obj.x + obj.width
-       and y >= obj.y
-       and y <= obj.y + obj.height
+local function pointInObject(x, y, tile)
+
+    return x >= tile.x
+       and x <= tile.x + tile.w
+       and y >= tile.y
+       and y <= tile.y + tile.h
 end
 
 return pointInObject

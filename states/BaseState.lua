@@ -46,12 +46,6 @@ function BaseState:enter(persistent)
   self.canvas = love.graphics.newCanvas(self.window_width, self.window_height)
   
   
-  self.cam = Camera(self.window_width / 2, self.window_height / 2, self.window_width, self.window_height)
-  self.cam:setFollowLerp(0.2)
-  self.cam:setFollowLead(0)
-  self.cam:setFollowStyle('PLATFORMER')
-  self.zoom_level = 1;
-  self.cam.scale = 1;
 
   -- Panning --
   self.panning = false
@@ -60,7 +54,14 @@ function BaseState:enter(persistent)
 
   -- Test Get Layer Properties --
   self.map_width = self.map.width * self.map.tilewidth
-  self.map_height = self.map.height * self.map.tilewidth
+  self.map_height = (self.map.height * self.map.tilewidth)
+
+  self.cam = Camera(self.window_width / 2, self.window_height / 2, self.window_width, self.window_height)
+  -- self.cam:setFollowLerp(0.2)
+  -- self.cam:setFollowLead(0)
+  -- self.cam:setFollowStyle('PLATFORMER')
+  self.zoom_level = 1;
+  self.cam.scale = 1;
 
   --Create Tiles From Map------------------------------------------------------
   self.tile_handler = TileHandler()
@@ -84,27 +85,39 @@ function BaseState:update(dt)
 
   -- Panning Update --
   if love.mouse.isDown(3) then
-    print("holding down")
     if not self.panning then
-      self.panning = true
-      init_pan_x, init_pan_y = love.mouse.getPosition()
+        self.panning = true
+        init_pan_x, init_pan_y = love.mouse.getPosition()
     else
-      local current_pan_x, current_pan_y = love.mouse.getPosition()
-      self.cam.x = clamp(self.cam.x + (current_pan_x - init_pan_x) * dt*2, (self.window_width / self.cam.scale) / 2, self.map_width - (self.window_width / self.cam.scale) / 2)
-      self.cam.y = clamp(self.cam.y + (current_pan_y - init_pan_y) * dt*2, (self.window_height / self.cam.scale) /2, self.map_height - (self.window_height / self.cam.scale) / 2)
+        local current_pan_x, current_pan_y = love.mouse.getPosition()
+        -- Calculate delta
+        local dx = (current_pan_x - init_pan_x) / self.cam.scale
+        local dy = (current_pan_y - init_pan_y) / self.cam.scale
+
+        -- Update camera (subtract because moving mouse right moves world left)
+        self.cam.x = clamp(self.cam.x - dx, (self.window_width / self.cam.scale) / 2, self.map_width - (self.window_width / self.cam.scale) / 2)
+        self.cam.y = clamp(self.cam.y - dy, (self.window_height / self.cam.scale) / 2, self.map_height - (self.window_height / self.cam.scale) / 2)
+
+        -- Reset init_pan for next frame
+        init_pan_x, init_pan_y = current_pan_x, current_pan_y
     end
-  elseif self.panning then
+elseif self.panning then
     self.panning = false
-  end
+end
 
   --Update Map-----------------------------------------------------------------
   self.map:update(dt)
 
-  --Get Mouse Coords-----------------------------------------------------------
-  local mouse_x, mouse_y = love.mouse.getPosition()
+  --Get Mouse Coords (account for scale)-----------------------------------------------------------
+  local mx, my = love.mouse.getPosition()
+  mx = mx / self.scale_factor
+  my = my / self.scale_factor
+  mx, my = self.cam:toWorldCoords(mx, my)
 
+    -- print("MouseX World: " .. mx .. "MouseY World: " .. my)
+    -- print("CamX: " .. self.cam.x - self.window_width / 2)
   --Update Tile Handler--------------------------------------------------------
-  self.tile_handler:update(dt)
+  self.tile_handler:update(dt, mx, my)
 end
 
 function BaseState:draw()

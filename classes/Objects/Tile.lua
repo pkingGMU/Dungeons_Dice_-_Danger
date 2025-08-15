@@ -7,19 +7,19 @@ local Class = require("libraries.hump-master.class")
 Tile = Class{}
 
 function Tile:init(params)
-    self.x = 0 or params.x
-    self.y = 0 or params.y
-    self.w = 0 or params.width
-    self.h = 0 or params.height
+    self.x = params.x or 0
+    self.y = params.y or 0
+    self.w = params.width or 0
+    self.h = params.height or 0
 
-    self.id = -1 or params.id
-    self.rotation = 0 or params.rotations
-    self.visible = true or params.visible
-    self.properties = {} or params.properties
-    self.name = "" or params.name
+    self.id = params.id or 0
+    self.rotation = params.rotations or 0
+    self.visible = params.visible or true
+    self.properties = params.properties or {}
+    self.name = params.name or ""
 
     self.persistent = true
-    self.type = 'Tile'
+    self.type = params.type or 'bruh'
 end
 
 function Tile:update(dt, state)

@@ -3,6 +3,9 @@ local Class = require("libraries.hump-master.class")
 
 -- Local Imports --
 require("classes.Objects.Tile")
+--Util Point Collsion----------------------------------------------------------
+local pointInObject = require("utils.PointCollision")
+
 
 TileHandler = Class()
 
@@ -26,48 +29,29 @@ function TileHandler:addMapTiles(game_map)
     if tile.type == "num_1" then
     elseif tile.type == "num_2" then
     end
-
     --Create Tiles-------------------------------------------------------------
-    local instance = Tile({x = tile.x, y = tile.y, w = tile.width, h= tile.height})
+    local instance = Tile({x = tile.x, y = tile.y - 32, width = tile.width, height = tile.height, id = tile.id, type = tile.type})
+    -- print(instance.x .. instance.y .. instance.w .. instance.h)
     table.insert(self.tile_table, instance)
     ::continue::
   end
 
     ::continue::
-
-
-  -- for type_idx, tile_type in pairs(game_map.tileInstances) do
-  --   if game_map.tileInstances[type_idx] == nil then
-  --     goto continue
-  --   end
-  --   for tile_idx, tile in pairs(game_map.tileInstances[type_idx]) do
-  --     local env_tile = game_map.tileInstances[type_idx][tile_idx]
-
-  --     if env_tile.layer.name == 'Object' or env_tile.layer.name == 'Item' then
-
-  --     elseif env_tile.layer.name == 'Spawn' then
-  --       --Tile({x = env_tile.x, y = env_tile.y, w = 32, h = 32, can_collide = false, tag = 'player_spawn'}, objectHandler, self)
-  --       local obj_params = {class = "Tile", type = "Tile", level = level, x = env_tile.x, y = env_tile.y, w = 32, h = 32, can_collide = false, tag = 'player_spawn', soft_reset = true}
-  --       local instance = ObjectFactory.create(obj_params, objectHandler)
-  --       table.insert(WorldState[level].default.objects, instance)
-
-  --     else
-  --       --Tile({x = env_tile.x, y = env_tile.y, w = 32, h = 32, can_collide = true}, objectHandler, self)
-  --       local obj_params = {class = "Tile", type = "Tile", level = level, x = env_tile.x, y = env_tile.y, w = 32, h = 32, can_collide = true, soft_reset = true}
-  --       local instance = ObjectFactory.create(obj_params, objectHandler)
-  --       table.insert(WorldState[level].default.objects, instance)
-
-  --     end
-  --   end
-  --     ::continue::
-  -- end
-
-
+    -- print(#self.tile_table)
 
 end
 
-function TileHandler:update(dt)
-
+function TileHandler:update(dt, mouse_x, mouse_y)
+  for i, tile in ipairs(self.tile_table) do
+    -- print("MouseX: " .. mouse_x .. "TileX: " .. tile.x)
+    -- print("MouseY: " .. mouse_y .. "TileY: " .. tile.y)
+    -- print(tile.w .. "Height" .. tile.h)
+    -- print(".........................")
+    if pointInObject(mouse_x, mouse_y, tile) then
+      print("Colliding with" .. tile.type)
+    else
+    end
+  end
 end
 
 -- function TileHandler:addBorderTiles(screen_height, screen_width)
