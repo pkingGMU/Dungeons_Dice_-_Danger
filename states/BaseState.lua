@@ -14,6 +14,13 @@ require("helper_functions.deepcopy")
 -- Camera --
 local Camera = require("libraries.STALKER-X.Camera")
 
+--Tile Handler-----------------------------------------------------------------
+require("classes.Handlers.TileHandler")
+
+--Util Point Collsion----------------------------------------------------------
+local pointInObject = require("utils.PointCollision")
+
+
 
 function BaseState.new()
     local self = setmetatable({}, BaseState)
@@ -54,16 +61,17 @@ function BaseState:enter(persistent)
   -- Test Get Layer Properties --
   self.map_width = self.map.width * self.map.tilewidth
   self.map_height = self.map.height * self.map.tilewidth
-  
-  
+
+  --Create Tiles From Map------------------------------------------------------
+  self.tile_handler = TileHandler()
+  self.tile_handler:addMapTiles(self.map)
+
+
 end
 
 
 function BaseState:update(dt)
 
-  
-
-  
   if self.debug_key == true and self.debug_mode == false then
     print("Debug Mode On")
     self.debug_mode = true
@@ -88,10 +96,15 @@ function BaseState:update(dt)
   elseif self.panning then
     self.panning = false
   end
-  
 
+  --Update Map-----------------------------------------------------------------
+  self.map:update(dt)
 
-  
+  --Get Mouse Coords-----------------------------------------------------------
+  local mouse_x, mouse_y = love.mouse.getPosition()
+
+  --Update Tile Handler--------------------------------------------------------
+  self.tile_handler:update(dt)
 end
 
 function BaseState:draw()
@@ -102,7 +115,8 @@ function BaseState:draw()
   self.cam:attach()
   love.graphics.setColor(1, 1, 1, 1)
 
-  self.map:drawLayer(self.map.layers["Tile Layer 1"])
+  self.map:drawLayer(self.map.layers["Background"])
+  self.map:drawLayer(self.map.layers["PlayTiles"])
 
   -- This will be different for every State --
   self:render()
@@ -141,14 +155,14 @@ function BaseState:mousereleased(x, y, button)
 end
 
 function BaseState:wheelmoved(x, y)
-  if y > 0 then
-    print("Mouse wheel up")
+  if (y > 0) and (self.cam.scale < 2) then
     self.zoom_level = self.cam.scale +.05
     self.cam.scale = self.zoom_level
-  elseif y < 0 then
-    print("Mouse wheel down")
+    print(self.cam.scale)
+  elseif y < 0 and (self.cam.scale > 0.75)then
     self.zoom_level = self.cam.scale - .05
     self.cam.scale = self.zoom_level
+    print(self.cam.scale)
   end
   
   
