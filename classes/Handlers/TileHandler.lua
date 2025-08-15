@@ -50,9 +50,13 @@ function TileHandler:checkCollision(mouse_x, mouse_y)
     if pointInObject(mouse_x, mouse_y, tile) then
       print("Colliding with" .. tile.type)
       tile:interact()
+      return true
     else
     end
   end
+
+
+      return false
 end
 
 -- function TileHandler:addBorderTiles(screen_height, screen_width)

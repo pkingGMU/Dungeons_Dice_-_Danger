@@ -20,7 +20,8 @@ require("classes.Handlers.TileHandler")
 --Util Point Collsion----------------------------------------------------------
 local pointInObject = require("utils.PointCollision")
 
-
+--Roller Handler---------------------------------------------------------------
+require("classes.Handlers.RollerHandler")
 
 function BaseState.new()
     local self = setmetatable({}, BaseState)
@@ -45,7 +46,24 @@ function BaseState:enter(persistent)
   -- Create a render target
   self.canvas = love.graphics.newCanvas(self.window_width, self.window_height)
   
-  
+  --UI Sprite------------------------------------------------------------------
+  self.ui_sprite = love.graphics.newImage("assets/Aseprite/TileMaps/ui.png")
+
+  --Roll Dice Button-----------------------------------------------------------
+  self.ui_elements = {
+    { raw_x = 100,
+      raw_y = 100,
+      x = 0,
+      y = 0,
+      w = 150,
+      h = 50,
+      text = "Roll",
+      onClick = function()
+        print("Button Clicked")
+      end
+    }
+  }
+
 
   -- Panning --
   self.panning = false
@@ -67,6 +85,8 @@ function BaseState:enter(persistent)
   self.tile_handler = TileHandler()
   self.tile_handler:addMapTiles(self.map)
 
+  --Create Roller Handler------------------------------------------------------
+  self.roller_handler = RollerHandler()
 
 end
 
@@ -82,6 +102,8 @@ function BaseState:update(dt)
     self.debug_mode = false
     self.debug_key = false
   end
+
+
 
   -- Panning Update --
   if love.mouse.isDown(3) then
@@ -101,9 +123,9 @@ function BaseState:update(dt)
         -- Reset init_pan for next frame
         init_pan_x, init_pan_y = current_pan_x, current_pan_y
     end
-elseif self.panning then
-    self.panning = false
-end
+  elseif self.panning then
+      self.panning = false
+  end
 
   --Update Map-----------------------------------------------------------------
   self.map:update(dt)
@@ -114,13 +136,21 @@ end
   my = my / self.scale_factor
   mx, my = self.cam:toWorldCoords(mx, my)
 
-    -- print("MouseX World: " .. mx .. "MouseY World: " .. my)
-    -- print("CamX: " .. self.cam.x - self.window_width / 2)
+  self.ui_elements[1].x, self.ui_elements[1].y = self.cam:toWorldCoords(self.ui_elements[1].raw_x, self.ui_elements[1].raw_y)
+  --Update Click and Callbacks-------------------------------------------------
   if self.click == true then
   --Update Tile Handler--------------------------------------------------------
-  self.tile_handler:checkCollision(mx, my)
-  self.click = false
+
+    if self.roller_handler:checkCollision(mx, my, self.ui_elements[1]) then
+
+    elseif self.tile_handler:checkCollision(mx, my) then
+    end
+
+
+    self.click = false
+
   end
+
 end
 
 function BaseState:draw()
@@ -138,6 +168,8 @@ function BaseState:draw()
   self:render()
   
   self.cam:detach()
+  --love.graphics.draw(self.ui_sprite, 0, 0)
+  love.graphics.rectangle("fill", self.ui_elements[1].raw_x, self.ui_elements[1].raw_y, self.ui_elements[1].w, self.ui_elements[1].h)
   love.graphics.setCanvas()
   love.graphics.setColor(1, 1, 1)
   love.graphics.setBlendMode("alpha", "premultiplied")
