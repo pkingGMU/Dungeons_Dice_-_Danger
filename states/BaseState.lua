@@ -116,8 +116,11 @@ end
 
     -- print("MouseX World: " .. mx .. "MouseY World: " .. my)
     -- print("CamX: " .. self.cam.x - self.window_width / 2)
+  if self.click == true then
   --Update Tile Handler--------------------------------------------------------
-  self.tile_handler:update(dt, mx, my)
+  self.tile_handler:checkCollision(mx, my)
+  self.click = false
+  end
 end
 
 function BaseState:draw()
@@ -162,9 +165,12 @@ end
 function BaseState:mousereleased(x, y, button)
   if button == 3 then
     self.panning = false
-    print("Middle Mouse Button Released")
+    -- print("Middle Mouse Button Released")
   end
-  
+
+  if button == 1 then
+    self.click = true
+  end
 end
 
 function BaseState:wheelmoved(x, y)
@@ -180,6 +186,7 @@ function BaseState:wheelmoved(x, y)
   
   
 end
+
 
 function BaseState:keypressed(key)
 

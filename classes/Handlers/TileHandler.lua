@@ -41,7 +41,7 @@ function TileHandler:addMapTiles(game_map)
 
 end
 
-function TileHandler:update(dt, mouse_x, mouse_y)
+function TileHandler:checkCollision(mouse_x, mouse_y)
   for i, tile in ipairs(self.tile_table) do
     -- print("MouseX: " .. mouse_x .. "TileX: " .. tile.x)
     -- print("MouseY: " .. mouse_y .. "TileY: " .. tile.y)
@@ -49,6 +49,7 @@ function TileHandler:update(dt, mouse_x, mouse_y)
     -- print(".........................")
     if pointInObject(mouse_x, mouse_y, tile) then
       print("Colliding with" .. tile.type)
+      tile:interact()
     else
     end
   end

@@ -25,6 +25,9 @@ end
 function Tile:update(dt, state)
 end
 
+function Tile:interact()
+    print("INTERACTED WITH: " .. self.id)
+end
 -- function Tile:addToTileHandler(tile, tileHandler)
 
 --     tileHandler.tile_idx = tileHandler.tile_idx + 1
